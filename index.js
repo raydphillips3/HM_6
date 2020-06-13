@@ -1,4 +1,23 @@
-var inquirer = require("inquirer");
+const fs = require("fs");
+const inquirer = require("inquirer");
+const axios = require("axios");
+const url = "https://api.github.com/";
+
+var writeJSON = function(response1) {
+    var text = JSON.stringify(response1, null, 2);
+    fs.writeFile("README2.md", text, function(err) {
+        if (err) {
+            throw Error("something went wrong" + err.message);
+        }
+        console.log(response1.title);
+        axios.get(url)
+            .then(function(response) {
+                (console.log(response))
+                .catch(error => console.log("Error: ", error))
+                console.log("Yes!!!");
+            });
+    });
+}
 
 inquirer
     .prompt([
@@ -13,7 +32,7 @@ inquirer
             name: "description"
         },
         {
-            type: "rawlist",
+            type: "input",
             message: "Please list your table of contents.",
             name: "table"
         },
@@ -28,24 +47,37 @@ inquirer
             name: "usage"
         },
         {
-            type: "input",
+            type: "list",
             message: "Which license is the application is covered under?",
-            name: "license"
+            name: "license",
+            choices: [
+                "Apache 2.0",
+                "BSD",
+                "GPL 3.0",
+                "ISC",
+                "MIT",
+                "Mozilla",
+                "The Unlicense",
+                "None"
+              ]
         },
         {
-            type: "list",
+            type: "input",
             message: "Who are the contributors to this project?",
             name: "contributors"
         },
         {
-            type: "rawlist",
+            type: "input",
             message: "Are there test intructions?",
             name: "test"
         },
         {
-            type: "",
-            message: "",
+            type: "input",
+            message: "If you have any questions pleae contact Ray Phillips",
             name: "questions"
         }
 
-    ])
+    ]).then(function(response1) {
+        console.log(response1);
+        writeJSON(response1);
+    });
